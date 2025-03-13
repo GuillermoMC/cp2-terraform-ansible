@@ -85,7 +85,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   name                  = "cp2VM-Ubuntu24"
   location              = azurerm_resource_group.rgcp2.location
   resource_group_name   = azurerm_resource_group.rgcp2.name
-  network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
+  network_interface_ids = [azurerm_network_interface.nic.id]
   size                  = "Standard_F2"
 
   os_disk {
