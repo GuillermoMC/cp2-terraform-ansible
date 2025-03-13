@@ -1,0 +1,22 @@
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/index.html
+
+---
+- name: "Instalar Podman"
+  hosts: localhost
+  #remote_user: azureadmin
+  remote_user: gmc
+  become: true
+  tasks:
+      - name: actualizar paquetes
+        ansible.builtin.apt:
+          force_apt_get: true
+          update_cache: yes
+
+      - name: add repositorio podman
+        ansible.builtin.apt_repository:
+          repo: ppa:projectatomic/ppa
+          
+      - name: Instalar podman
+        ansible.builtin.apt:
+          name: podman
+          update_cache: yes
