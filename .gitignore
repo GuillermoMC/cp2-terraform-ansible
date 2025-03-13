@@ -6,3 +6,7 @@ terraform/.terraform/providers/registry.terraform.io/hashicorp/random/3.7.1/wind
 script_externo.cmd
 terraform/.terraform.lock.hcl
 terraform/plan.tfplan
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/main.destroy.tfplan
+terraform/infra.tfplan
