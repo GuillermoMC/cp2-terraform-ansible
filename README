@@ -1,0 +1,14 @@
+
+# Comandos
+
+## Crear infraestructura
+
+terraform init -upgrade
+terraform plan -out infra.tfplan
+terraform apply infra.tfplan
+
+
+## Destruir infraestructura
+
+terraform plan -destroy -out infra.destroy.tfplan
+terraform apply infra.destroy.tfplan
