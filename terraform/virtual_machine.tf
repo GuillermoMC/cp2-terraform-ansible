@@ -22,7 +22,9 @@ resource "azurerm_public_ip" "ipPublica" {
   name                = "cp2PublicIp"
   location            = azurerm_resource_group.rgcp2.location
   resource_group_name = azurerm_resource_group.rgcp2.name
-  allocation_method   = "Dynamic"
+  //allocation_method   = "Dynamic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 # Crear reglas y grupo de seguridad
