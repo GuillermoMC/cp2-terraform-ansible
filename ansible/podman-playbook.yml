@@ -7,16 +7,20 @@
   remote_user: gmc
   become: true
   tasks:
-      - name: actualizar paquetes
-        ansible.builtin.apt:
-          force_apt_get: true
-          update_cache: yes
+    - name: Actualizar los paquetes APT
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
 
-      - name: add repositorio podman
-        ansible.builtin.apt_repository:
-          repo: ppa:projectatomic/ppa
-          
-      - name: Instalar podman
-        ansible.builtin.apt:
-          name: podman
-          update_cache: yes
+    - name: Instalación
+      apt:
+        name: podman
+        state: present
+
+    - name: Verificar la instalación
+      command: podman --version
+      register: podman_version
+
+    - name: Mostrar versión
+      debug:
+        var: podman_version.stdout
