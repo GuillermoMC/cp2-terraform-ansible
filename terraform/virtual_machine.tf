@@ -88,7 +88,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   location              = azurerm_resource_group.rgcp2.location
   resource_group_name   = azurerm_resource_group.rgcp2.name
   network_interface_ids = [azurerm_network_interface.nic.id]
-  size                  = "Standard_F2"
+  size                  = "Standard_F2s_v2"
 
   os_disk {
     name                 = "cp2VM-DISK"
@@ -98,8 +98,8 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "24.04-LTS"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts-gen2"
     version   = "latest"
   }
 
