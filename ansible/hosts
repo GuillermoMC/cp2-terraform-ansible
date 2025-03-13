@@ -1,0 +1,7 @@
+# no generado todavia
+[azurevm] 
+127.0.0.1 
+
+# maquina local con linux
+[localhost] 
+192.168.1.41 ansible_connection=local
