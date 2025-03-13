@@ -1,5 +1,20 @@
+# Azure
 
-# Comandos
+## Logearse en Azure mediante AZ CLI
+
+az login
+
+az account show
+
+## En Windows con PowerShell (mi caso)
+
+Ejecutar los siguientes comandos con el id y tenant_id que devuelve "az account show"
+
+- $Env:ARM_SUBSCRIPTION_ID = ""
+- $Env:ARM_TENANT_ID = ""
+
+
+# Terraform
 
 ## Crear infraestructura
 
