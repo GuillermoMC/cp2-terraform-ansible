@@ -10,7 +10,7 @@
   #remote_user: gmc
   become: true
   vars_files:
-    - /vars/external_vars.yml
+    - /vars/variables.yml
   tasks:
     - name: Cargar las credenciales
       ansible.builtin.include_vars:
