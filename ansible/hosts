@@ -1,6 +1,6 @@
 # no generado todavia
 [azurevm] 
-127.0.0.1 
+20.73.183.158 ansible_user=azureadmin ansible_ssh_private_key_file=~/.ssh/azure_vm.pem
 
 # ansible_connection=local
 # maquina local con linux
