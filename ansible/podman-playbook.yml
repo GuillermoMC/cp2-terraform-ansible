@@ -2,6 +2,8 @@
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_image_module.html#examples
 # https://www.redhat.com/en/blog/automate-podman-ansible
 # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_login_module.html#ansible-collections-containers-podman-podman-login-module
+
 ---
 - name: "Instalar Podman - Login ACR - Desplegar contenedor del ACR"
   #hosts: localhost
@@ -55,12 +57,12 @@
         name: nginx
         tag: latest
 
+
     - name: Login en Azure
-      ansible.builtin.command:
-        cmd: podman login "{{ ACR_NAME }}"
-      environment:
-        USERNAME: "{{ credenciales_azure.ACR_USR }}"
-        PASSWORD: "{{ credenciales_azure.ACR_PASS }}"
+      containers.podman.podman_login:
+        username: "{{ credenciales_azure.ACR_USR }}"
+        password: "{{ credenciales_azure.ACR_PASS }}"
+        registry: "{{ ACR_NAME }}"
       register: podman_login
 
     - name: Subir la imagen nginx a Azure ACR
