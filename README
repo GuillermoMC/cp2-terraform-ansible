@@ -31,12 +31,18 @@ terraform apply infra.destroy.tfplan
 
 # Ansible
 
+## Clave para acceso ssh
+
+Tal y como indica el fichero "host" que es nuestro inventory para acceder a la maquina se guarda la clave en el fichero "~/.ssh/azure_vm.pem"
+
+* Este fichero se crea a mano una vez terminada la creación de la infraestructura con terraform, ya que te muestra por pantalla dicha clave
+
 
 ## Almacen de credenciales
 
 Para hacer login con Azure y el ACR se puede utilizar Ansible Vault
 
-Un fichero "azure_vault.yml" con la siguiente estructura:
+Un fichero "azure_vault.yml" que se utilizará en los playbooks de ansible con la siguiente estructura:
 
 ACR_USR: ""
 ACR_PASS: ""
