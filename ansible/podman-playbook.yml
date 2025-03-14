@@ -6,10 +6,8 @@
 
 ---
 - name: "Instalar Podman - Login ACR - Desplegar contenedor del ACR"
-  #hosts: localhost
   hosts: azurevm
   remote_user: azureadmin
-  #remote_user: gmc
   become: true
   vars_files:
     - variables.yml
@@ -30,7 +28,8 @@
         state: present
 
     - name: Verificar la instalación
-      command: podman --version
+      ansible.builtin.command:
+        cmd: podman --version
       register: podman_version
 
     - name: Mostrar versión
@@ -45,7 +44,8 @@
         create: yes
 
     - name: Verificar que el archivo se haya modificado correctamente
-      command: cat /etc/containers/registries.conf
+      ansible.builtin.command:
+        cmd: cat /etc/containers/registries.conf
       register: registries_conf
 
     - name: Mostrar el contenido del archivo registries.conf
@@ -57,13 +57,25 @@
         name: nginx
         tag: latest
 
-
     - name: Login en Azure
       containers.podman.podman_login:
         username: "{{ credenciales_azure.ACR_USR }}"
         password: "{{ credenciales_azure.ACR_PASS }}"
         registry: "{{ ACR_NAME }}"
       register: podman_login
+
+    - name: Tagear la imagen con nuestra versión/ACR
+      ansible.builtin.command:
+        cmd: podman tag nginx:latest {{ ACR_NAME }}.azurecr.io/nginx:cp2gmc
+
+    - name: Verificar imagenes
+      ansible.builtin.command:
+        cmd: podman images
+      register: podman_images_list
+
+    - name: Mostrar imagenes podman
+      debug:
+        var: podman_images_list.stdout
 
     - name: Subir la imagen nginx a Azure ACR
       ansible.builtin.command:
@@ -74,11 +86,9 @@
       ansible.builtin.command:
         cmd: podman run -d --name cp2nginx {{ ACR_NAME }}/nginx:cp2gmc
 
-    #- name: Ejecutar un contenedor de Nginx con Podman
-    #  command: podman run -d --name nginx-container -p 8080:80 nginx:latest
-
     - name: Verificar que el contenedor esté en ejecución
-      command: podman ps
+      ansible.builtin.command:
+        cmd: podman ps
       register: podman_ps_output
 
     - name: Mostrar contenedores en ejecución
