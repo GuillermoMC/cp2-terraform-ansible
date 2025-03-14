@@ -1,13 +1,22 @@
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/index.html
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_image_module.html#examples
 # https://www.redhat.com/en/blog/automate-podman-ansible
-
+# https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
 ---
-- name: "Instalar Podman - Desplegar contenedor del ACR"
-  hosts: localhost
-  #remote_user: azureadmin
-  remote_user: gmc
+- name: "Instalar Podman - Login ACR - Desplegar contenedor del ACR"
+  #hosts: localhost
+  hosts: azurevm
+  remote_user: azureadmin
+  #remote_user: gmc
   become: true
+  vars_files:
+    - /vars/external_vars.yml
   tasks:
+    - name: Cargar las credenciales
+      ansible.builtin.include_vars:
+        file: azure_vault.yml
+        name: credenciales_azure
+
     - name: Actualizar los paquetes APT
       apt:
         update_cache: yes
@@ -40,9 +49,31 @@
     - name: Mostrar el contenido del archivo registries.conf
       debug:
         var: registries_conf.stdout
+    
+    - name: Descargar la imagen
+      containers.podman.podman_image:
+        name: nginx
+        tag: latest
+
+    - name: Login en Azure
+      ansible.builtin.command:
+        cmd: podman login "{{ ACR_NAME }}"
+      environment:
+        USERNAME: "{{ credenciales_azure.ACR_USR }}"
+        PASSWORD: "{{ credenciales_azure.ACR_PASS }}"
+      register: podman_login
+
+    - name: Subir la imagen nginx a Azure ACR
+      ansible.builtin.command:
+        cmd: podman push {{ ACR_NAME }}/nginx:cp2gmc
+      when: podman_login is success
 
     - name: Ejecutar un contenedor de Nginx con Podman
-      command: podman run -d --name nginx-container -p 8080:80 nginx:latest
+      ansible.builtin.command:
+        cmd: podman run -d --name cp2nginx {{ ACR_NAME }}/nginx:cp2gmc
+
+    #- name: Ejecutar un contenedor de Nginx con Podman
+    #  command: podman run -d --name nginx-container -p 8080:80 nginx:latest
 
     - name: Verificar que el contenedor esté en ejecución
       command: podman ps
