@@ -62,11 +62,10 @@
         username: "{{ credenciales_azure.ACR_USR }}"
         password: "{{ credenciales_azure.ACR_PASS }}"
         registry: "{{ ACR_NAME }}"
-      register: podman_login
 
     - name: Tagear la imagen con nuestra versión/ACR
       ansible.builtin.command:
-        cmd: podman tag nginx:latest {{ ACR_NAME }}.azurecr.io/nginx:cp2gmc
+        cmd: podman tag nginx:latest {{ ACR_NAME }}/nginx:cp2gmc
 
     - name: Verificar imagenes
       ansible.builtin.command:
@@ -80,7 +79,6 @@
     - name: Subir la imagen nginx a Azure ACR
       ansible.builtin.command:
         cmd: podman push {{ ACR_NAME }}/nginx:cp2gmc
-      when: podman_login is success
 
     - name: Ejecutar un contenedor de Nginx con Podman
       ansible.builtin.command:
