@@ -2,6 +2,7 @@
 [azurevm] 
 127.0.0.1 
 
+# ansible_connection=local
 # maquina local con linux
 [localhost] 
-192.168.1.41 ansible_connection=local
+192.168.1.51

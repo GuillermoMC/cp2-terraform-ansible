@@ -1,7 +1,8 @@
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/index.html
+# https://www.redhat.com/en/blog/automate-podman-ansible
 
 ---
-- name: "Instalar Podman"
+- name: "Instalar Podman - Desplegar contenedor del ACR"
   hosts: localhost
   #remote_user: azureadmin
   remote_user: gmc
@@ -24,3 +25,29 @@
     - name: Mostrar versión
       debug:
         var: podman_version.stdout
+
+    - name: Configurar el archivo de registries.conf para buscar en Docker Hub
+      lineinfile:
+        path: /etc/containers/registries.conf
+        regexp: '^unqualified-search-registries'
+        line: 'unqualified-search-registries = ["docker.io"]'
+        create: yes
+
+    - name: Verificar que el archivo se haya modificado correctamente
+      command: cat /etc/containers/registries.conf
+      register: registries_conf
+
+    - name: Mostrar el contenido del archivo registries.conf
+      debug:
+        var: registries_conf.stdout
+
+    - name: Ejecutar un contenedor de Nginx con Podman
+      command: podman run -d --name nginx-container -p 8080:80 nginx:latest
+
+    - name: Verificar que el contenedor esté en ejecución
+      command: podman ps
+      register: podman_ps_output
+
+    - name: Mostrar contenedores en ejecución
+      debug:
+        var: podman_ps_output.stdout
