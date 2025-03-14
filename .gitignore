@@ -11,3 +11,4 @@ terraform/terraform.tfstate.backup
 terraform/main.destroy.tfplan
 terraform/infra.tfplan
 terraform/infra.destroy.tfplan
+ansible/azure_vault.yml

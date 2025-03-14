@@ -27,3 +27,28 @@ terraform apply infra.tfplan
 
 terraform plan -destroy -out infra.destroy.tfplan
 terraform apply infra.destroy.tfplan
+
+
+# Ansible
+
+
+## Almacen de credenciales
+
+Para hacer login con Azure y el ACR se puede utilizar Ansible Vault
+
+Un fichero "azure_vault.yml" con la siguiente estructura:
+
+azure_client_id: ""
+azure_client_secret: ""
+azure_tenant_id: ""
+azure_subscription_id: ""
+
+Donde los valores vienen dados por el comando de Azure CLI visto previamente.
+
+Encriptar datos utilizando :
+- ansible-vault encrypt azure_vault.yml
+
+Luego lanzar el playbook con el flag "--ask-vault-pass"
+
+
+* Por seguridad en este repositorio el fichero azure_vault.yml estará ignorado en GIT
