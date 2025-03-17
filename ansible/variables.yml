@@ -1,2 +1,3 @@
 ACR_NAME: "containerregistrycp2.azurecr.io"
 AKS_NAME: "cp2aks"
+AKS_NAMESPACE: "cp2namespace"

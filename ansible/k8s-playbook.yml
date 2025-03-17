@@ -1,0 +1,127 @@
+# https://learn.microsoft.com/en-us/azure/developer/ansible/aks-configure-clusters
+# docker pull mcr.microsoft.com/azuredocs/azure-vote-front
+# ansible-galaxy collection install kubernetes.core
+# az aks get-credentials --resource-group rg-cp2rg --name cp2aks
+# https://hub.docker.com/r/xstof/azure-vote/tags
+# https://learn.microsoft.com/en-us/azure/aks/aksarc/tutorial-kubernetes-prepare-application
+# https://github.com/Azure-Samples/azure-voting-app-redis/blob/master/docker-compose.yaml
+
+---
+- name: Create Servicio Persistente en AKS Azure
+  # da igual porque tira de la api de k8s
+  hosts: localhost 
+  gather_facts: no
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: Cargar las credenciales
+      ansible.builtin.include_vars:
+        file: azure_vault.yml
+        name: credenciales_azure
+
+    - name: Add config AKS
+      set_fact:
+        kubeconfig: "/mnt/c/Users/Guille/.kube/config"
+
+    - name: Add config PY
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Crear un Namespace en Kubernetes
+      hosts: localhost
+      tasks:
+        - name: Crear un namespace en Kubernetes
+          kubernetes.core.k8s:
+            kubeconfig: "{{ kubeconfig }}"
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: "{{ AKS_NAMESPACE }}" 
+
+    - name: Deployment del backend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        definition:
+          apiVersion: v1
+          kind: Deployment
+          metadata:
+            name: redis
+            namespace: "{{ AKS_NAMESPACE }}" 
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: redis
+            template:
+              metadata:
+                labels:
+                  app: redis
+              spec:
+                containers:
+                  - name: redis
+                    image: redis:latest
+                    ports:
+                      - containerPort: 6379
+                    env:
+                      - name: ALLOW_EMPTY_PASSWORD
+                        value: "yes"
+
+    - name: Deployment del frontend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        definition:
+          apiVersion: v1
+          kind: Deployment
+          metadata:
+            name: azure-vote-front
+            namespace: "{{ AKS_NAMESPACE }}" 
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: azure-vote-front
+            template:
+              metadata:
+                labels:
+                  app: azure-vote-front
+              spec:
+                containers:
+                  - name: azure-vote-front
+                    image: xstof/azure-vote:latest
+                    ports:
+                      - containerPort: 80
+                    env:
+                      - name: REDIS
+                        value: redis
+
+    - name: Crear el servicio de acceso al backend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: redis
+            namespace: "{{ AKS_NAMESPACE }}" 
+          spec:
+            ports:
+              - port: 6379
+            selector:
+              app: redis
+
+    - name: Crear el servicio de acceso al frontend
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: azure-vote-front
+            namespace: "{{ AKS_NAMESPACE }}" 
+          spec:
+            type: LoadBalancer
+            ports:
+              - port: 80
+            selector:
+              app: azure-vote-front
+
