@@ -1,0 +1,10 @@
+---
+- name: Ejecutar todos los playbooks
+  hosts: all
+  become: yes
+  vars_files:
+    - variables.yml
+
+- import_playbook: preparacion-playbook.yml
+- import_playbook: podman-playbook.yml
+- import_playbook: k8s-playbook.yml

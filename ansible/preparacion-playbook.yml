@@ -1,0 +1,93 @@
+---
+- name: "Instalar PODMAN - Descargar imagenes y subirlas al ACR"
+  hosts: azurevm
+  remote_user: azureadmin
+  become: true
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: Cargar las credenciales
+      ansible.builtin.include_vars:
+        file: azure_vault.yml
+        name: credenciales_azure
+
+    - name: Actualizar los paquetes APT
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Instalación
+      apt:
+        name: podman
+        state: present
+
+    - name: Verificar la instalación
+      ansible.builtin.command:
+        cmd: podman --version
+      register: podman_version
+
+    - name: Mostrar versión
+      debug:
+        var: podman_version.stdout
+
+    - name: Configurar el archivo de registries.conf para buscar en Docker Hub
+      lineinfile:
+        path: /etc/containers/registries.conf
+        regexp: '^unqualified-search-registries'
+        line: 'unqualified-search-registries = ["docker.io"]'
+        create: yes
+
+    - name: Verificar que el archivo se haya modificado correctamente
+      ansible.builtin.command:
+        cmd: cat /etc/containers/registries.conf
+      register: registries_conf
+
+    - name: Mostrar el contenido del archivo registries.conf
+      debug:
+        var: registries_conf.stdout
+
+    - name: Login en Azure
+      containers.podman.podman_login:
+        username: "{{ credenciales_azure.ACR_USR }}"
+        password: "{{ credenciales_azure.ACR_PASS }}"
+        registry: "{{ ACR_NAME }}"
+
+    - name: Descargar la imagen de nginx
+      containers.podman.podman_image:
+        name: nginx
+        tag: latest
+
+    - name: Tagear la imagen con nuestra versión/ACR
+      ansible.builtin.command:
+        cmd: podman tag nginx:latest {{ ACR_NAME }}/nginx:cp2gmc
+
+    - name: Subir la imagen nginx a Azure ACR
+      ansible.builtin.command:
+        cmd: podman push {{ ACR_NAME }}/nginx:cp2gmc
+
+    - name: Descargar la imagen de redis
+      containers.podman.podman_image:
+        name: redis
+        tag: latest
+    
+    - name: Tagear la imagen con nuestra versión/ACR
+      ansible.builtin.command:
+        cmd: podman tag redis:latest {{ ACR_NAME }}/regis:cp2gmc
+
+    - name: Subir la imagen nginx a Azure ACR
+      ansible.builtin.command:
+        cmd: podman push {{ ACR_NAME }}/nginx:cp2gmc
+
+    - name: Descargar la imagen del azure-vote-front
+      containers.podman.podman_image:
+        name: xstof/azure-vote
+        tag: latest
+
+    - name: Tagear la imagen con nuestra versión/ACR
+      ansible.builtin.command:
+        cmd: podman tag xstof/azure-vote:latest {{ ACR_NAME }}/xstof/azure-vote:cp2gmc
+
+    - name: Subir la imagen nginx a Azure ACR
+      ansible.builtin.command:
+        cmd: podman push {{ ACR_NAME }}/nginx:cp2gmc
+
