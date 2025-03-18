@@ -23,7 +23,7 @@ resource "azapi_resource" "ssh_public_key" {
 
 output "private_key" {
   value     = azapi_resource_action.ssh_public_key_gen.output.privateKey
-  #sensitive = true
+  sensitive = true
 }
 
 output "public_key" {
