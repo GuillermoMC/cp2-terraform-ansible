@@ -14,7 +14,7 @@
   tasks:
     - name: Ejecutar un contenedor de Nginx con Podman
       ansible.builtin.command:
-        cmd: podman run -d --name cp2nginx {{ ACR_NAME }}/nginx:cp2gmc
+        cmd: podman run -d --name cp2nginx -p 8080:80 {{ ACR_NAME }}/nginx:cp2gmc 
 
     - name: Verificar que el contenedor esté en ejecución
       ansible.builtin.command:
