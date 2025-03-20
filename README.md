@@ -11,6 +11,7 @@
 Ejecutar los siguientes comandos con el id y tenant_id que devuelve "az account show"
 
 > $Env:ARM_SUBSCRIPTION_ID = ""
+
 > $Env:ARM_TENANT_ID = ""
 
 
@@ -19,13 +20,16 @@ Ejecutar los siguientes comandos con el id y tenant_id que devuelve "az account 
 ## Crear infraestructura
 
 > terraform init -upgrade
+
 > terraform plan -out infra.tfplan
+
 > terraform apply infra.tfplan
 
 
 ## Destruir infraestructura
 
 > terraform plan -destroy -out infra.destroy.tfplan
+
 > terraform apply infra.destroy.tfplan
 
 
@@ -45,15 +49,16 @@ Para hacer login con Azure y el ACR se puede utilizar Ansible Vault
 Un fichero "azure_vault.yml" que se utilizará en los playbooks de ansible con la siguiente estructura:
 
 > ACR_USR: ""
+
 > ACR_PASS: ""
 
 Donde los valores vienen dados por el comando de Azure CLI visto previamente.
 
 Encriptar datos utilizando :
+
 > ansible-vault encrypt azure_vault.yml
 
 Luego lanzar el playbook con el flag "--ask-vault-pass"
-
 
 * Por seguridad en este repositorio el fichero azure_vault.yml estará ignorado en GIT
 
@@ -67,5 +72,7 @@ Antes de lanzar el playbook de K8S hay que obtener las credenciales con:
 ## Orden de ejecución de los playbooks
 
 > ansible-playbook -i hosts --ask-vault-pass preparacion-playbook.yml
+
 > ansible-playbook -i hosts --ask-vault-pass podman-playbook.yml
+
 > ansible-playbook -i hosts --ask-vault-pass k8s-playbook.yml
