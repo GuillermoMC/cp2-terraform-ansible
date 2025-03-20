@@ -12,3 +12,6 @@ terraform/main.destroy.tfplan
 terraform/infra.tfplan
 terraform/infra.destroy.tfplan
 ansible/azure_vault.yml
+ansible/k8s-playbook.svg
+ansible/podman-playbook.svg
+ansible/preparacion-playbook.svg
