@@ -28,15 +28,12 @@
         ansible_python_interpreter: /usr/bin/python3
 
     - name: Crear un Namespace en Kubernetes
-      hosts: localhost
-      tasks:
-        - name: Crear un namespace en Kubernetes
-          kubernetes.core.k8s:
-            kubeconfig: "{{ kubeconfig }}"
-            apiVersion: v1
-            kind: Namespace
-            metadata:
-              name: "{{ AKS_NAMESPACE }}" 
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: "{{ AKS_NAMESPACE }}" 
 
     - name: Deployment del backend
       kubernetes.core.k8s:
