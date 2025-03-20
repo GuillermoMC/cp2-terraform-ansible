@@ -21,11 +21,13 @@ resource "azapi_resource" "ssh_public_key" {
   parent_id = azurerm_resource_group.rgcp2.id
 }
 
+# Output de la clave privada (no se muestra por pantalla)
 output "private_key" {
   value     = azapi_resource_action.ssh_public_key_gen.output.privateKey
   sensitive = true
 }
 
+# Output de la clave publica
 output "public_key" {
   value = azapi_resource_action.ssh_public_key_gen.output.publicKey
 }
