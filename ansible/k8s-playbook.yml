@@ -30,10 +30,11 @@
     - name: Crear un Namespace en Kubernetes
       kubernetes.core.k8s:
         kubeconfig: "{{ kubeconfig }}"
-        apiVersion: v1
-        kind: Namespace
-        metadata:
-          name: "{{ AKS_NAMESPACE }}" 
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ AKS_NAMESPACE }}" 
 
     - name: Deployment del backend
       kubernetes.core.k8s:
