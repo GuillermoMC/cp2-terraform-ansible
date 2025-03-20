@@ -62,6 +62,8 @@ Antes de lanzar el playbook de K8S hay que obtener las credenciales con:
 
 > az aks get-credentials --resource-group rg-cp2rg --name cp2aks
 
+* Devolvera una ruta y es la que hay que indicarla en el playbook de AKS
+
 ## Orden de ejecución de los playbooks
 
 > ansible-playbook -i hosts --ask-vault-pass preparacion-playbook.yml
